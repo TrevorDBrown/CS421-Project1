@@ -12,7 +12,7 @@ public class NumberToWordDriver {
 		String input = "";
 		
 		try {
-			inFile = new File("src/wordlist.txt");
+			inFile = new File("wordlist.txt");
 			wt = buildTree(inFile);
 		} catch(IOException e) {
 			e.printStackTrace();
@@ -41,13 +41,8 @@ public class NumberToWordDriver {
 		//Input received
 		//Begin analysis
 		if(wt!=null) {
-			wt.method1(input);
+			wt.find(input);
 		}
-		
-//		numToWord(input);
-		
-		//Print solution
-		System.out.printf("Your number is %s.", input);
 	}
 
 	private static void numToWord(String n) {

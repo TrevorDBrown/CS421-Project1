@@ -1,65 +1,88 @@
+import java.util.ArrayList;
 
 public class WordTree<T> {
-	private Node<String> root;
+	private Node root;
 
 	public WordTree() {
-		this.root = new Node<String>();
+		this.root = new Node();
 	}
 	
 	/**
-	 * Returns the wordified number
+	 * 
+	 * @prerequisite - s must be passes in the format ###-###-####
+	 * @param s
 	 * @return
 	 */
-	public String method1(String n) {
-//		n = formatPhoneNum(n);
-		Node<String> tNode = root;
-//		int tInt;
-//		for(int i = 0; i < n.length(); i++) {
-//			for(int j = 0; j < tNode.getChildren().size(); j++) {
-//				tInt = tNode.getChildren().get(j).getIndex();
-//				if((int)n.charAt(i)-47 == tInt) {
-//					tNode = tNode.getChildren().get(j);
-//				} else if(j == tNode.getChildren().size() -1) {
-//					return null;
-//				}
-//			}
-//		}
-		return tNode.getData();
+	public void find(String s) {
+		s = formatPhoneNum(s);
 		
-		//looks for 10 char word, returns if found
-		//looks for 7 char word minus the area code, returns if found
-		//looks for separate 3 char and 4 char word for exchange and number
-		//returns whatever this last search finds.
+		ArrayList<String> sol7;
+		ArrayList<String> sol4;
+		ArrayList<String> sol3;
+		ArrayList<String> sol10 = recFind(s,root,10);
+
 		
-		//needs to return an array of options for some other method to make 
-		//all combinations from.
+		if(sol10 == null) { //If no 10 digit combo is found
+			sol7 = recFind(s,root,7);
+			if(sol7 == null) { //If no 7 digit combo is found
+				sol4 = recFind(s,root,4);
+				sol3 = recFind(s,root,3);
+				if(sol4 == null && sol3 == null) { //If no 3-4 digit combo is found
+					System.out.println(s); //Maybe format this later
+				} else if(sol3 == null) { //If no 3 digit combo is found
+					printSol(sol3,s);
+				} else if(sol4 == null) { //If no 4 digit combo is found
+					printSol(sol4,s);
+				}
+				else {
+					printSol(sol4,sol3);
+				}
+			} else {
+				printSol(sol7,s);
+			}
+		} else {
+			printSol(sol10,s);
+		}
+	}
+	
+	/**
+	 * Operates from 0 to d
+	 * @param s
+	 * @param n
+	 * @param d
+	 * @return
+	 */
+	private ArrayList<String> recFind(String s, Node n, int d) {
+		if(d == 0) {
+			return n.getData();
+		} else {
+			for(int i = 0; i < n.getChildren().size(); i++) {
+				if(s.charAt(s.length()-d) == n.getChildren().get(i).getIndex()) {
+					recFind(s,n.getChildren().get(i),d-1);
+				}
+			}
+			return null;
+		}
 	}
 	
 	public void add(String s) {
-		String tStr = stringToNum(s);
-		Node<String> tNode = root;
-		int tInt;	// Used to store the temporary index the 
-					// algorithm is looking for
-		
-		// Iterates through the letters of the input string
-		for(int i = 0; i < tStr.length(); i++) {
-			tInt = Integer.parseInt(tStr.substring(i, i+1));
-			// Iterates through the children of the current node
-			for(int j = 0; j < tNode.getChildren().size(); j++) {
-				// If the node has a child with the appropriate index
-				// that node is moved to
-				if(tInt == tNode.getChildren().get(j).getIndex()) {
-					tNode = tNode.getChildren().get(j);
-					break;
-				// If there is no node, the node is made
-				} else if(j == tNode.getChildren().size()-1) {
-					if(i == tStr.length()-1) {
-						tNode.addChild(new Node<String>(s,tInt));
-					} else {
-						tNode.addChild(new Node<String>("",tInt));
-					}
+		recAdd(s,root,0);
+	}
+	
+	private void recAdd(String s, Node n, int d) {
+		if(s.length() == 1) {
+			n.getData().add(s);
+		} else {
+			for(int i = 0; i < n.getChildren().size(); i++) {
+				//Checks all children for match
+				if(toNum(s.charAt(d)) == n.getChildren().get(i).getIndex()) {
+					recAdd(s,n.getChildren().get(i),d+1);
 				}
 			}
+			//If there isn't a child, we make one
+			Node tNode = new Node(null,toNum(s.charAt(d)));
+			n.addChild(tNode);
+			recAdd(s,tNode,d+1);
 		}
 	}
 	
@@ -112,4 +135,52 @@ public class WordTree<T> {
 	private String formatPhoneNum(String n) {
 		return n.substring(0,3) + n.substring(4,6) + n.substring(7);
 	}
+	
+	/** Finds all permutations of the words and prints each
+	 * 
+	 * @param s1
+	 */
+	private void printSol(ArrayList<String> s1, String num) {
+		String num1, num2;
+		num1 = num;
+		if(s1.get(0).length() == 10) {
+			for(int i = 0; i < s1.size(); i++) {
+				System.out.println(s1.get(i));
+			}
+		} else if(s1.get(0).length() == 7) {
+			num1 = num1.substring(0,3);
+			for(int i = 0; i < s1.size(); i++) {
+				System.out.printf("%s-%s-%s",num1,s1.get(i));
+			}
+		} else if(s1.get(0).length() == 4) {
+			num1 = num1.substring(0,6);
+			for(int i = 0; i < s1.size(); i++) {
+				System.out.printf("%s-%s-%s",num1.substring(0,3),
+						num1.substring(3,6),s1.get(i));
+			}
+		} else {
+			num2 = num1.substring(6);
+			num1 = num1.substring(0,3);
+			
+			for(int i = 0; i < s1.size(); i ++) {
+				System.out.printf("%s-%s-%s",num1,s1.get(i),num2);
+			}
+		}
+	}
+	
+	/** Finds all permutations of the words and prints each
+	 * 
+	 * @param s1
+	 */
+	private void printSol(ArrayList<String> s1, ArrayList<String> s2) {
+		for(int i = 0; i < s1.size(); i++) {
+			for(int j = 0; j < s2.size(); j++) {
+				for(int k = 0; k < s2.size(); k++) {
+					System.out.printf("%s-%s-%s",s2.get(k),
+							s2.get(j),s1.get(i));
+				}
+			}
+		}
+	}
+	
 }

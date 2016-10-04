@@ -1,9 +1,9 @@
 import java.util.ArrayList;
 
-public class Node<T> {
+public class Node {
 	private int index;
-	private T data;
-	private ArrayList<Node<T>> children;
+	private ArrayList<String> data;
+	private ArrayList<Node> children;
 	
 	/**
 	 * Constructor for the root of the WordTree
@@ -11,7 +11,7 @@ public class Node<T> {
 	public Node() {
 		this.index = 0;
 		data = null;
-		children = new ArrayList<Node<T>>();
+		children = new ArrayList<Node>();
 	}
 
 	/**
@@ -19,20 +19,20 @@ public class Node<T> {
 	 * @param data
 	 * @param index
 	 */
-	public Node(T data, int index) {
+	public Node(ArrayList<String> data, int index) {
 		this.index = index;
 		this.data = data;
-		children = new ArrayList<Node<T>>();
+		children = new ArrayList<Node>();
 	}
 	
-	public void addChild(Node<T> n) {
+	public void addChild(Node n) {
 		children.add(n);
 	}
 
 	/**
 	 * Returns the arraylist of children of the node
 	 */
-	public ArrayList<Node<T>> getChildren() {
+	public ArrayList<Node> getChildren() {
 		return children;
 		
 	}
@@ -49,7 +49,7 @@ public class Node<T> {
 	 * Returns the data
 	 * @return
 	 */
-	public T getData() {
+	public ArrayList<String> getData() {
 		return data;
 	}
 
