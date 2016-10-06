@@ -70,19 +70,34 @@ public class WordTree<T> {
 	}
 	
 	private void recAdd(String s, Node n, int d) {
-		if(s.length() == 1) {
-			n.getData().add(s);
+		ArrayList<String> tArr;
+		
+		if(d == s.length()) {
+			if(n.getData() == null) {
+				tArr = new ArrayList<String>();
+				tArr.add(s);
+				n.setData(tArr);
+			} else {
+				n.getData().add(s);
+			}
 		} else {
 			for(int i = 0; i < n.getChildren().size(); i++) {
 				//Checks all children for match
 				if(toNum(s.charAt(d)) == n.getChildren().get(i).getIndex()) {
 					recAdd(s,n.getChildren().get(i),d+1);
+					return;
 				}
 			}
 			//If there isn't a child, we make one
-			Node tNode = new Node(null,toNum(s.charAt(d)));
-			n.addChild(tNode);
-			recAdd(s,tNode,d+1);
+			if(s.length() == 1) {
+				tArr = new ArrayList<String>();
+				tArr.add(s);
+				Node tNode = new Node(tArr,toNum(s.charAt(d)));
+			} else {
+				Node tNode = new Node(null,toNum(s.charAt(d)));
+				n.addChild(tNode);
+				recAdd(s,tNode,d+1);
+			}
 		}
 	}
 	
@@ -133,7 +148,8 @@ public class WordTree<T> {
 	}
 	
 	private String formatPhoneNum(String n) {
-		return n.substring(0,3) + n.substring(4,6) + n.substring(7);
+		return n.substring(0,1) + n.substring(2,5) + 
+				n.substring(6,9) + n.substring(10);
 	}
 	
 	/** Finds all permutations of the words and prints each

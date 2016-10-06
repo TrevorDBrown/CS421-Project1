@@ -53,4 +53,7 @@ public class Node {
 		return data;
 	}
 
+	public void setData(ArrayList<String> data) {
+		this.data = data;
+	}
 }

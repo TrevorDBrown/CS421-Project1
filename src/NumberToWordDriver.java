@@ -12,7 +12,7 @@ public class NumberToWordDriver {
 		String input = "";
 		
 		try {
-			inFile = new File("wordlist.txt");
+			inFile = new File("newWords.txt");
 			wt = buildTree(inFile);
 		} catch(IOException e) {
 			e.printStackTrace();
@@ -52,8 +52,11 @@ public class NumberToWordDriver {
 	private static WordTree<String> buildTree(File inFile) throws IOException {
 		WordTree<String> wt = new WordTree<String>();
 		Scanner words = new Scanner(inFile);
+		int counter = 0;
 		while(words.hasNextLine()) {
+//			System.out.printf("New Word %d\n",counter);
 			wt.add(words.nextLine());
+//			counter++;
 		}
 		words.close();
 		return wt;
@@ -66,10 +69,11 @@ public class NumberToWordDriver {
 	 */
 	private static boolean inFormat(String input) {
 		char c;
-		if(input.length() == 12) {
+		System.out.println(input.length());
+		if(input.length() == 14) {
 			for(int i = 0; i < input.length(); i++) {
 				c = input.charAt(i);
-				if(i==3 || i==7) {
+				if(i==1|| i==5 || i==9) {
 					if((int)c!=45) { //Makes sure the char is '-'
 						return false;
 					}
