@@ -38,25 +38,19 @@ public class NumberToWordDriver {
 		if(in != null) {
 			in.close();
 		}
+		
 		//Input received
 		//Begin analysis
 		if(wt!=null) {
 			wt.find(input);
 		}
 	}
-
-	private static void numToWord(String n) {
-		
-	}
 	
 	private static WordTree<String> buildTree(File inFile) throws IOException {
 		WordTree<String> wt = new WordTree<String>();
 		Scanner words = new Scanner(inFile);
-		int counter = 0;
 		while(words.hasNextLine()) {
-//			System.out.printf("New Word %d\n",counter);
 			wt.add(words.nextLine());
-//			counter++;
 		}
 		words.close();
 		return wt;

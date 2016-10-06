@@ -16,29 +16,54 @@ public class WordTree<T> {
 	public void find(String s) {
 		s = formatPhoneNum(s);
 		
-		ArrayList<String> sol7;
-		ArrayList<String> sol4;
-		ArrayList<String> sol3;
+		ArrayList<String> sol7, sol4, sol3, tSol3;
 		ArrayList<String> sol10 = recFind(s,root,10);
-
 		
 		if(sol10 == null) { //If no 10 digit combo is found
-			sol7 = recFind(s,root,7);
+			sol7 = recFind(s.substring(1),root,7);
+			
 			if(sol7 == null) { //If no 7 digit combo is found
-				sol4 = recFind(s,root,4);
-				sol3 = recFind(s,root,3);
+				sol4 = recFind(s.substring(7),root,4);
+				sol3 = recFind(s.substring(1,4),root,3);
+				
+				if(sol3 == null) {
+					sol3 = recFind(s.substring(4,7),root,3);
+				} else {
+					tSol3 = recFind(s.substring(4,7),root,3);
+					for(int i = 0; i < tSol3.size(); i++) {
+						sol3.add(tSol3.get(i));
+					}
+				}
+				
 				if(sol4 == null && sol3 == null) { //If no 3-4 digit combo is found
-					System.out.println(s); //Maybe format this later
+					System.out.printf("%s-%s-%s-%s\n",s.substring(0,1),
+							s.substring(1,4),s.substring(4,7),
+							s.substring(7)); //Maybe format this later
 				} else if(sol3 == null) { //If no 3 digit combo is found
-					printSol(sol3,s);
-				} else if(sol4 == null) { //If no 4 digit combo is found
 					printSol(sol4,s);
+				} else if(sol4 == null) { //If no 4 digit combo is found
+					printSol(sol3,s);
 				}
 				else {
-					printSol(sol4,sol3);
+					printSol(sol4,sol3,s);
 				}
 			} else {
-				printSol(sol7,s);
+				sol3 = recFind(s.substring(1,4),root,3);
+				
+				if(sol3 == null) {
+					sol3 = recFind(s.substring(4,7),root,3);
+				} else {
+					tSol3 = recFind(s.substring(4,7),root,3);
+					for(int i = 0; i < tSol3.size(); i++) {
+						sol3.add(tSol3.get(i));
+					}
+				}
+				
+				if(sol3 == null) {
+					printSol(sol7,s);
+				} else {
+					printSol(sol7,sol3,s);
+				}
 			}
 		} else {
 			printSol(sol10,s);
@@ -57,8 +82,9 @@ public class WordTree<T> {
 			return n.getData();
 		} else {
 			for(int i = 0; i < n.getChildren().size(); i++) {
-				if(s.charAt(s.length()-d) == n.getChildren().get(i).getIndex()) {
-					recFind(s,n.getChildren().get(i),d-1);
+				if(Integer.parseInt(s.substring(s.length()-d,s.length()-d+1))
+						== n.getChildren().get(i).getIndex()) {
+					return recFind(s,n.getChildren().get(i),d-1);
 				}
 			}
 			return null;
@@ -72,7 +98,7 @@ public class WordTree<T> {
 	private void recAdd(String s, Node n, int d) {
 		ArrayList<String> tArr;
 		
-		if(d == s.length()) {
+		if(d == s.length()) {	//Base Case
 			if(n.getData() == null) {
 				tArr = new ArrayList<String>();
 				tArr.add(s);
@@ -93,20 +119,14 @@ public class WordTree<T> {
 				tArr = new ArrayList<String>();
 				tArr.add(s);
 				Node tNode = new Node(tArr,toNum(s.charAt(d)));
+				n.addChild(tNode);
+				recAdd(s,tNode,d+1);
 			} else {
 				Node tNode = new Node(null,toNum(s.charAt(d)));
 				n.addChild(tNode);
 				recAdd(s,tNode,d+1);
 			}
 		}
-	}
-	
-	private String stringToNum(String s) {
-		String solution = "";
-		for(int i = 0; i < s.length(); i++) {
-			solution += toNum(s.charAt(i));
-		}
-		return solution;
 	}
 	
 	/**
@@ -157,29 +177,26 @@ public class WordTree<T> {
 	 * @param s1
 	 */
 	private void printSol(ArrayList<String> s1, String num) {
-		String num1, num2;
-		num1 = num;
 		if(s1.get(0).length() == 10) {
 			for(int i = 0; i < s1.size(); i++) {
 				System.out.println(s1.get(i));
 			}
 		} else if(s1.get(0).length() == 7) {
-			num1 = num1.substring(0,3);
 			for(int i = 0; i < s1.size(); i++) {
-				System.out.printf("%s-%s-%s",num1,s1.get(i));
+				System.out.printf("%s-%s-%s\n",num.substring(0,1),
+						num.substring(1,4),s1.get(i));
 			}
 		} else if(s1.get(0).length() == 4) {
-			num1 = num1.substring(0,6);
 			for(int i = 0; i < s1.size(); i++) {
-				System.out.printf("%s-%s-%s",num1.substring(0,3),
-						num1.substring(3,6),s1.get(i));
+				System.out.printf("%s-%s-%s-%s\n",num.substring(0,1),
+						num.substring(1,4),num.substring(4,7),s1.get(i));
 			}
 		} else {
-			num2 = num1.substring(6);
-			num1 = num1.substring(0,3);
-			
 			for(int i = 0; i < s1.size(); i ++) {
-				System.out.printf("%s-%s-%s",num1,s1.get(i),num2);
+				for(int j = 0; j < s1.size(); j++) {
+					System.out.printf("%s-%s-%s-%s\n",num.substring(0,1),
+							s1.get(i),s1.get(j),num.substring(7));
+				}
 			}
 		}
 	}
@@ -188,12 +205,22 @@ public class WordTree<T> {
 	 * 
 	 * @param s1
 	 */
-	private void printSol(ArrayList<String> s1, ArrayList<String> s2) {
-		for(int i = 0; i < s1.size(); i++) {
-			for(int j = 0; j < s2.size(); j++) {
-				for(int k = 0; k < s2.size(); k++) {
-					System.out.printf("%s-%s-%s",s2.get(k),
-							s2.get(j),s1.get(i));
+	private void printSol(ArrayList<String> s1, ArrayList<String> s2, String num) {
+		
+		if(s1.get(0).length() == 7) {
+			for(int i = 0; i < s1.size(); i++) {
+				for(int j = 0; j < s2.size(); j++) {
+					System.out.printf("%s-%s-%s\n",num.substring(0,1),
+							s2.get(i),s1.get(i));
+				}
+			}
+		} else { //Must be that s1 = 4, s2 = 3
+			for(int i = 0; i < s1.size(); i++) {
+				for(int j = 0; j < s2.size(); j++) {
+					for(int k = 0; k < s2.size(); k++) {
+						System.out.printf("%s-%s-%s\n",s2.get(k),
+								s2.get(j),s1.get(i));
+					}
 				}
 			}
 		}
